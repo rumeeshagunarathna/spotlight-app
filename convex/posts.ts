@@ -51,11 +51,35 @@ export const getFeedPosts = query({
                   posts.map(async (post) => {
                         const postAuthor = await ctx.db.get(post.userId)
 
-                        await ctx.db.query("likes").withIndex("by_user_and_post",(q)=>q.eq("userId",currentUser._id))
+                        const like = await ctx.db.query("likes").withIndex("by_user_and_post", (q) => q.eq("userId", currentUser._id).eq("postId", post._id)).first();
+
+                        const bookmark = await ctx.db
+                          .query("bookmarks")
+                          .withIndex("by_user_and_post", (q) =>
+                            q
+                              .eq("userId", currentUser._id)
+                              .eq("postId", post._id)
+                          )
+                              .first();
+                        
+                        return {
+                              ...post,
+                              author: {
+                                    _id: postAuthor?._id,
+                                    username: postAuthor?.username,
+                                    image:postAuthor?.image
+                              },
+                              isLiked: !!like,
+                              isBookmarked:!!bookmark
+                              
+                        }
                   })
             )
 
 
             return postsWithInfo;
+           
       }
 })
+
+
