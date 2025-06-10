@@ -93,7 +93,7 @@ export const toggleLike = mutation({
         q.eq("userId", currentUser._id).eq("postId", args.postId)
       )
       .first();
-    
+
     const post = await ctx.db.get(args.postId);
     if (!post) throw new Error("Post not found");
 
@@ -101,7 +101,7 @@ export const toggleLike = mutation({
       //remove like
       await ctx.db.delete(existing._id);
       await ctx.db.patch(args.postId, { likes: post.likes - 1 });
-      return false;//unliked
+      return false; //unliked
     } else {
       //add like
       await ctx.db.insert("likes", {
@@ -119,7 +119,7 @@ export const toggleLike = mutation({
           postId: args.postId,
         });
       }
-return true // liked
+      return true; // liked
     }
   },
 });
